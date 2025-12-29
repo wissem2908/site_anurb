@@ -70,7 +70,7 @@ include 'includes/header.php';
                 <div class="fact-item text-center bg-light h-100 p-5 pt-0">
                     <div class="fact-icon">
                         <img src="img/icons/icon-4.png" alt="Icon">
-                       
+
                     </div>
                     <h3 class="mb-3">Outil Stratégique de l'État</h3>
                     <p class="mb-0">Principal instrument de l'État pour l'élaboration et le suivi des plans d'aménagement et d'urbanisme.</p>
@@ -79,7 +79,7 @@ include 'includes/header.php';
             <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
                 <div class="fact-item text-center bg-light h-100 p-5 pt-0">
                     <div class="fact-icon">
-                         <img src="img/icons/icon-3.png" alt="Icon">
+                        <img src="img/icons/icon-3.png" alt="Icon">
                     </div>
                     <h3 class="mb-3">Pôle d'Expertise & Compétencet</h3>
                     <p class="mb-0">Centre national d'expertise technique au service de l'État et des collectivités locales.</p>
@@ -104,7 +104,9 @@ include 'includes/header.php';
             <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
                 <h4 class="section-title">A propos</h4>
                 <h1 class="display-5 mb-4">L'Agence Nationale de l'Urbanisme (ANURB)</h1>
-                <p>est un Établissement Public à Caractère Industriel et Commercial (EPIC) crée par décret exécutif n°09-344 du 22 Octobre 2009, doté de la personnalité morale et de l'autonomie financière. </p><p>L'agence est régie par les règles applicables à l'administration dans ses relations avec l'État et est réputée commerçante dans ses rapports avec les tiers. L'agence est placée sous la tutelle du Ministre de l'Habitat et de l'Urbanisme et de la ville.</p><p>L'agence est « l'outil principal de l'État en matière d'élaboration et de suivi des plans d'aménagement et d'Urbanisme », tel qu'institué par la législation et la réglementation en vigueur. Elle constitue « le pôle de compétence et d'expertise technique au service de l'État et des collectivités locales ».</p>
+                <p>est un Établissement Public à Caractère Industriel et Commercial (EPIC) crée par décret exécutif n°09-344 du 22 Octobre 2009, doté de la personnalité morale et de l'autonomie financière. </p>
+                <p>L'agence est régie par les règles applicables à l'administration dans ses relations avec l'État et est réputée commerçante dans ses rapports avec les tiers. L'agence est placée sous la tutelle du Ministre de l'Habitat et de l'Urbanisme et de la ville.</p>
+                <p>L'agence est « l'outil principal de l'État en matière d'élaboration et de suivi des plans d'aménagement et d'Urbanisme », tel qu'institué par la législation et la réglementation en vigueur. Elle constitue « le pôle de compétence et d'expertise technique au service de l'État et des collectivités locales ».</p>
                 <div class="d-flex align-items-center mb-5">
                     <div class="d-flex flex-shrink-0 align-items-center justify-content-center border border-5 border-primary" style="width: 120px; height: 120px;">
                         <h1 class="display-1 mb-n2" data-toggle="counter-up">17</h1>
@@ -210,7 +212,7 @@ include 'includes/header.php';
         <div class="row g-5">
             <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
                 <h4 class="section-title">
-Pourquoi nous choisir !</h4>
+                    Pourquoi nous choisir !</h4>
                 <h1 class="display-6 mb-4">Pourquoi faire confiance à l'ANURB ?</h1>
                 <p class="mb-4">Agence publique placée sous la tutelle du Ministère de l'Habitat, de l'Urbanisme et de la Ville, l'ANURB constitue l'outil stratégique de l'État en matière de planification urbaine. Elle met son expertise technique, son expérience et ses outils modernes au service du développement territorial durable et de l'accompagnement des collectivités locales.</p>
                 <div class="row g-4">
