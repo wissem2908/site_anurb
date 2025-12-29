@@ -90,6 +90,173 @@ include 'includes/header.php';
 </div>
 <!-- Facts End -->
 
+<div class="container-xxl py-5">
+    <section id="actualites" class="py-5">
+        <div class="container">
+            <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
+                <h4 class="section-title">Actualités</h4>
+            </div>
+            <div class="row g-3">
+
+                <!-- BIG NEWS LEFT -->
+                <div class="col-lg-8">
+                    <div class="news-item news-big">
+                        <img src="https://picsum.photos/seed/anurb1/900/600" alt="">
+                        <a class="news-overlay" href="actualites.php">
+                            <span class="news-badge">ÉVÉNEMENT</span>
+                            <h4>Visite d’étude dans le cadre de la coopération Algéro–Camerounaise</h4>
+
+                            <div class="news-meta">
+                                <span class="news-date">29 Décembre 2025</span> |
+                                <span class="news-views">1.2k vues</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- SMALL NEWS RIGHT (LIST) -->
+                <div class="col-lg-4">
+
+                    <div class="news-item news-small mb-3">
+                        <img src="https://picsum.photos/seed/anurb2/600/400" alt="">
+                        <a class="news-overlay" href="actualites.php">
+                            <span class="news-badge">ÉVÉNEMENT</span>
+                            <h6>Vers une agriculture intelligente</h6>
+
+                            <div class="news-meta">
+                                <span class="news-date">28 Décembre 2025</span> |
+                                <span class="news-views">500 vues</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="news-item news-small mb-3">
+                        <img src="https://picsum.photos/seed/anurb3/600/400" alt="">
+                        <a class="news-overlay">
+                            <span class="news-badge">ÉVÉNEMENT</span>
+                            <h6>Conférence nationale sur l’urbanisme</h6>
+
+                            <div class="news-meta">
+                                <span class="news-date">27 Décembre 2025</span> |
+                                <span class="news-views">750 vues</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="news-item news-small">
+                        <img src="https://picsum.photos/seed/anurb4/600/400" alt="">
+                        <a class="news-overlay">
+                            <span class="news-badge">ÉVÉNEMENT</span>
+                            <h6>Signature d’une convention de coopération</h6>
+
+                            <div class="news-meta">
+                                <span class="news-date">26 Décembre 2025</span> |
+                                <span class="news-views">980 vues</span>
+                            </div>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="actualites.php" class="btn btn-primary py-2 px-4">
+                    Voir toutes les actualités
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .news-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 6px;
+        }
+
+        .news-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .4s ease;
+        }
+
+        .news-item:hover img {
+            transform: scale(1.05);
+        }
+
+        /* BIG LEFT */
+        .news-big {
+            height: 480px;
+        }
+
+        /* SMALL RIGHT */
+        .news-small {
+            height: 150px;
+        }
+
+        .news-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 12px;
+            background: linear-gradient(to top, rgba(129, 88, 49, 0.9), transparent);
+            color: #fff !important;
+        }
+
+        .news-overlay h4,
+        .news-overlay h6 {
+            margin: 0;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .news-badge {
+            display: inline-block;
+            background: #dc3545;
+            color: #fff;
+            font-size: 11px;
+            padding: 3px 8px;
+            margin-bottom: 6px;
+        }
+
+        .news-meta {
+            font-size: 12px;
+            margin-top: 6px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            color: #f0f0f0;
+        }
+
+        .news-meta .news-date::before {
+            content: "\1F4C5";
+            margin-right: 4px;
+        }
+
+        .news-meta .news-views::before {
+            content: "\1F441";
+            margin-right: 4px;
+        }
+
+        .news-excerpt {
+            font-size: 13px;
+            margin: 4px 0 0;
+            color: #fff;
+        }
+
+        @media (max-width: 992px) {
+            .news-big {
+                height: 300px;
+            }
+
+            .news-small {
+                height: 150px;
+            }
+        }
+    </style>
+</div>
 
 <!-- About Start -->
 <div class="container-xxl py-5">

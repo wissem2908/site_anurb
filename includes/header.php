@@ -80,7 +80,7 @@
                 <a href="index.php" class="nav-item nav-link active">Accueil</a>
                 <a href="about.php" class="nav-item nav-link">A propos</a>
                 <a href="service.php" class="nav-item nav-link">Services</a>
-                <div class="nav-item dropdown">
+                <!-- <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                     <div class="dropdown-menu border-0 m-0">
                         <a href="feature.html" class="dropdown-item">Our Features</a>
@@ -90,7 +90,7 @@
                         <a href="testimonial.html" class="dropdown-item">Testimonial</a>
                         <a href="404.html" class="dropdown-item">404 Page</a>
                     </div>
-                </div>
+                </div> -->
                 <a href="contact.php" class="nav-item nav-link">Contact</a>
             </div>
             <a href="" class="btn btn-primary py-2 px-4 d-none d-lg-block">Appointment</a>
