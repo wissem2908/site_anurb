@@ -89,7 +89,7 @@ include 'includes/header.php';
     </div>
 </div>
 <!-- Facts End -->
-
+<!-- Actualités Section -->
 <div class="container-xxl py-5">
     <section id="actualites" class="py-5">
         <div class="container">
@@ -167,95 +167,7 @@ include 'includes/header.php';
         </div>
     </section>
 
-    <style>
-        .news-item {
-            position: relative;
-            overflow: hidden;
-            border-radius: 6px;
-        }
-
-        .news-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform .4s ease;
-        }
-
-        .news-item:hover img {
-            transform: scale(1.05);
-        }
-
-        /* BIG LEFT */
-        .news-big {
-            height: 480px;
-        }
-
-        /* SMALL RIGHT */
-        .news-small {
-            height: 150px;
-        }
-
-        .news-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 12px;
-            background: linear-gradient(to top, rgba(129, 88, 49, 0.9), transparent);
-            color: #fff !important;
-        }
-
-        .news-overlay h4,
-        .news-overlay h6 {
-            margin: 0;
-            font-weight: 600;
-            color: #fff;
-        }
-
-        .news-badge {
-            display: inline-block;
-            background: #dc3545;
-            color: #fff;
-            font-size: 11px;
-            padding: 3px 8px;
-            margin-bottom: 6px;
-        }
-
-        .news-meta {
-            font-size: 12px;
-            margin-top: 6px;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            color: #f0f0f0;
-        }
-
-        .news-meta .news-date::before {
-            content: "\1F4C5";
-            margin-right: 4px;
-        }
-
-        .news-meta .news-views::before {
-            content: "\1F441";
-            margin-right: 4px;
-        }
-
-        .news-excerpt {
-            font-size: 13px;
-            margin: 4px 0 0;
-            color: #fff;
-        }
-
-        @media (max-width: 992px) {
-            .news-big {
-                height: 300px;
-            }
-
-            .news-small {
-                height: 150px;
-            }
-        }
-    </style>
+  
 </div>
 
 <!-- About Start -->

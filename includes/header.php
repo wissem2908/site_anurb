@@ -30,6 +30,7 @@
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+      <link href="assets/css/main.css" rel="stylesheet">
 </head>
 
 <body>
@@ -79,6 +80,7 @@
             <div class="navbar-nav ms-auto p-4 p-lg-0">
                 <a href="index.php" class="nav-item nav-link active">Accueil</a>
                 <a href="about.php" class="nav-item nav-link">A propos</a>
+                <a href="actualites.php" class="nav-item nav-link">Actualités</a>
                 <a href="service.php" class="nav-item nav-link">Services</a>
                 <!-- <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
