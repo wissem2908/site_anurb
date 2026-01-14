@@ -6,27 +6,27 @@ include 'includes/header.php';
 <!-- Carousel Start -->
 <div class="container-fluid p-0 pb-5 wow fadeIn" data-wow-delay="0.1s">
     <div class="owl-carousel header-carousel position-relative">
-<div class="owl-carousel-item position-relative" data-dot="<img src='img/carousel-1.jpg'>">
-    <!-- Video instead of image -->
-    <video class="img-fluid" autoplay muted loop playsinline>
-        <source src="assets/images/video.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
+        <div class="owl-carousel-item position-relative" data-dot="<img src='img/carousel-1.jpg'>">
+            <!-- Video instead of image -->
+            <video class="img-fluid" autoplay muted loop playsinline>
+                <source src="assets/images/video.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
 
-    <div class="owl-carousel-inner">
-        <div class="container">
-            <div class="row justify-content-start">
-                <div class="col-10 col-lg-8">
-                    <h1 class="display-1 text-white animated slideInDown">Best Architecture And Interior Design Services</h1>
-                    <p class="fs-5 fw-medium text-white mb-4 pb-3">
-                        Vero elitr justo clita lorem. Ipsum dolor at sed stet sit diam no. Kasd rebum ipsum et diam justo clita et kasd rebum sea elitr.
-                    </p>
-                    <a href="" class="btn btn-primary py-3 px-5 animated slideInLeft">En savoir plus</a>
+            <div class="owl-carousel-inner">
+                <div class="container">
+                    <div class="row justify-content-start">
+                        <div class="col-10 col-lg-8">
+                            <h1 class="display-1 text-white animated slideInDown">Best Architecture And Interior Design Services</h1>
+                            <p class="fs-5 fw-medium text-white mb-4 pb-3">
+                                Vero elitr justo clita lorem. Ipsum dolor at sed stet sit diam no. Kasd rebum ipsum et diam justo clita et kasd rebum sea elitr.
+                            </p>
+                            <a href="" class="btn btn-primary py-3 px-5 animated slideInLeft">En savoir plus</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
         <div class="owl-carousel-item position-relative" data-dot="<img src='img/carousel-2.jpg'>">
             <img class="img-fluid" src="img/carousel-2.jpg" alt="">
@@ -105,66 +105,8 @@ include 'includes/header.php';
                 <h4 class="section-title">Actualités</h4>
             </div>
             <div class="row g-3">
-
-                <!-- BIG NEWS LEFT -->
-                <div class="col-lg-8">
-                    <div class="news-item news-big">
-                        <img src="https://picsum.photos/seed/anurb1/900/600" alt="">
-                        <a class="news-overlay" href="actualites.php">
-                            <span class="news-badge">ÉVÉNEMENT</span>
-                            <h4>Visite d’étude dans le cadre de la coopération Algéro–Camerounaise</h4>
-
-                            <div class="news-meta">
-                                <span class="news-date">29 Décembre 2025</span> |
-                                <span class="news-views">1.2k vues</span>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- SMALL NEWS RIGHT (LIST) -->
-                <div class="col-lg-4">
-
-                    <div class="news-item news-small mb-3">
-                        <img src="https://picsum.photos/seed/anurb2/600/400" alt="">
-                        <a class="news-overlay" href="actualites.php">
-                            <span class="news-badge">ÉVÉNEMENT</span>
-                            <h6>Vers une agriculture intelligente</h6>
-
-                            <div class="news-meta">
-                                <span class="news-date">28 Décembre 2025</span> |
-                                <span class="news-views">500 vues</span>
-                            </div>
-                        </a>
-                    </div>
-
-                    <div class="news-item news-small mb-3">
-                        <img src="https://picsum.photos/seed/anurb3/600/400" alt="">
-                        <a class="news-overlay">
-                            <span class="news-badge">ÉVÉNEMENT</span>
-                            <h6>Conférence nationale sur l’urbanisme</h6>
-
-                            <div class="news-meta">
-                                <span class="news-date">27 Décembre 2025</span> |
-                                <span class="news-views">750 vues</span>
-                            </div>
-                        </a>
-                    </div>
-
-                    <div class="news-item news-small">
-                        <img src="https://picsum.photos/seed/anurb4/600/400" alt="">
-                        <a class="news-overlay">
-                            <span class="news-badge">ÉVÉNEMENT</span>
-                            <h6>Signature d’une convention de coopération</h6>
-
-                            <div class="news-meta">
-                                <span class="news-date">26 Décembre 2025</span> |
-                                <span class="news-views">980 vues</span>
-                            </div>
-                        </a>
-                    </div>
-
-                </div>
+                <div class="col-lg-8" id="big-news"></div>
+                <div class="col-lg-4" id="small-news"></div>
             </div>
 
             <div class="text-center mt-4">
@@ -175,7 +117,7 @@ include 'includes/header.php';
         </div>
     </section>
 
-  
+
 </div>
 
 <!-- About Start -->
@@ -356,7 +298,7 @@ include 'includes/header.php';
                 <div class="nav nav-pills d-flex justify-content-between w-100 h-100 me-4">
                     <button class="nav-link w-100 d-flex align-items-center text-start p-4 mb-4 active" data-bs-toggle="pill" data-bs-target="#tab-pane-1" type="button">
                         <h3 class="m-0">01. Blog Image
-Réhabilitation et intervention sur le tissu urbain ancien</h3>
+                            Réhabilitation et intervention sur le tissu urbain ancien</h3>
                     </button>
                     <button class="nav-link w-100 d-flex align-items-center text-start p-4 mb-4" data-bs-toggle="pill" data-bs-target="#tab-pane-2" type="button">
                         <h3 class="m-0">02. Présentation ANURB</h3>
@@ -642,3 +584,71 @@ Réhabilitation et intervention sur le tissu urbain ancien</h3>
 include 'includes/footer.php';
 
 ?>
+
+
+<script>
+    $(document).ready(function() {
+
+        $.ajax({
+            url: 'assets/php/get_latest_news.php',
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+
+                if (!response.success || response.data.length === 0) {
+                    return;
+                }
+
+                let news = response.data;
+
+                // ---------- BIG NEWS ----------
+                let big = news[0];
+
+                $('#big-news').html(`
+                <div class="news-item news-big">
+                    <img src="admin/assets/uploads/news/${big.main_image}" alt="">
+                    <a class="news-overlay" href="actualites.php?news=${big.slug}">
+                        <span class="news-badge">${big.category_name}</span>
+                        <h4>${big.title}</h4>
+                        <div class="news-meta">
+                            <span class="news-date">${formatDate(big.published_at)}</span> |
+                            <span class="news-views">${big.views} vues</span>
+                        </div>
+                    </a>
+                </div>
+            `);
+
+                // ---------- SMALL NEWS ----------
+                let smallHtml = '';
+
+                for (let i = 1; i < news.length; i++) {
+                    smallHtml += `
+                    <div class="news-item news-small mb-3">
+                        <img src="admin/assets/uploads/news/${news[i].main_image}" alt="">
+                        <a class="news-overlay" href="actualites.php?news=${news[i].slug}">
+                            <span class="news-badge">${news[i].category_name}</span>
+                            <h6>${news[i].title}</h6>
+                            <div class="news-meta">
+                                <span class="news-date">${formatDate(news[i].published_at)}</span> |
+                                <span class="news-views">${news[i].views} vues</span>
+                            </div>
+                        </a>
+                    </div>
+                `;
+                }
+
+                $('#small-news').html(smallHtml);
+            }
+        });
+
+        function formatDate(dateStr) {
+            let d = new Date(dateStr);
+            return d.toLocaleDateString('fr-FR', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+
+    });
+</script>
