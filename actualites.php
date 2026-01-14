@@ -5,6 +5,7 @@
     .hidden-news {
         display: none !important;
     }
+    
 </style>
 
 <!-- Page Header Start -->
@@ -94,10 +95,11 @@
             <!-- RIGHT: Sidebar -->
             <div class="col-lg-4 sidebar">
                 <!-- Search -->
-                <div class="search-box">
-                    <input type="text" class="form-control" placeholder="Rechercher une actualité...">
-                </div>
-
+               <div class="search-box">
+    <input type="text" class="form-control" id="newsSearch" placeholder="Rechercher une actualité...">
+</div>
+  
+<div class="search-results mt-2 sidebar-card"></div>
 
 
                 <!-- Tags & Filters -->
@@ -629,6 +631,52 @@
             error: function(xhr, status, error) {
                 console.error("Erreur lors du chargement des actualités récentes:", error);
             }
+        });
+
+
+        /****************************************** search news *************************************** */
+
+        $('#newsSearch').on('input', function() {
+            const query = $(this).val().trim();
+            console.log("Recherche de :", query);
+            const resultsContainer = $('.search-results');
+
+            if (query.length < 2) { // minimum 2 characters to search
+                resultsContainer.empty();
+                return;
+            }
+
+            $.ajax({
+                url: 'assets/php/search_news.php',
+                type: 'GET',
+                data: {
+                    q: query
+                },
+                dataType: 'json',
+                success: function(newsList) {
+                    resultsContainer.empty();
+
+                    if (!newsList || newsList.length === 0) {
+                        resultsContainer.append('<div class="p-2 text-muted">Aucune actualité trouvée.</div>');
+                        return;
+                    }
+
+                    newsList.forEach(news => {
+                        resultsContainer.append(`
+                    <div class="search-item d-flex align-items-center p-2" style="cursor:pointer;" onclick="window.location='actualite.php?news=${news.slug}'">
+                        <img src="admin/assets/uploads/news/${news.main_image}" alt="${news.title}" style="width:50px; height:40px; object-fit:cover; margin-right:8px;">
+                        <div>
+                            <small>${news.title}</small><br>
+                            <small class="text-muted">${news.published_at}</small>
+                        </div>
+                    </div>
+                `);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("Erreur lors de la recherche :", error);
+                }
+            });
         });
     });
 </script>
