@@ -9,7 +9,17 @@
     .pagination {
         float: right;
     }
+
+    .image-card {
+        cursor: grab;
+    }
+
+    .sortable-ghost {
+        opacity: 0.5;
+    }
 </style>
+
+
 <!-- Begin Page Content -->
 <div class="container-fluid">
     <button class="btn btn-primary float-right" id="add_news_btn">Ajouter actualité</button>
@@ -79,14 +89,64 @@
                         <!-- <div class="col-md-6">
                         <label for="slug" class="form-label">Slug</label>
                         <input type="text" class="form-control" id="slug" name="slug" placeholder="slug-pour-url" required>
-                    </div> -->
+                         </div> -->
 
                         <!-- Description -->
                         <div class="col-12">
                             <label for="description" class="form-label">Description</label>
                             <textarea class="form-control" id="description" name="description" rows="5" placeholder="Contenu de la news" required></textarea>
                         </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Tags</label>
 
+                            <div class="tag-input" id="tagInput">
+                                <input
+                                    type="text"
+                                    id="tagText"
+                                    placeholder="Ajouter un tag puis Entrée ou virgule">
+                            </div>
+
+                            <!-- Hidden input sent to PHP -->
+                            <input type="hidden" name="tags" id="tags">
+
+                            <small class="text-muted">
+                                Appuyez sur Entrée ou virgule pour ajouter un tag
+                            </small>
+                        </div>
+
+                        <style>
+                            .tag-input {
+                                display: flex;
+                                flex-wrap: wrap;
+                                gap: 6px;
+                                padding: 6px;
+                                border: 1px solid #ced4da;
+                                border-radius: 6px;
+                                min-height: 42px;
+                            }
+
+                            .tag-input input {
+                                border: none;
+                                outline: none;
+                                flex: 1;
+                            }
+
+                            .tag {
+                                background: #0d6efd;
+                                color: #fff;
+                                padding: 4px 10px;
+                                border-radius: 12px;
+                                font-size: 13px;
+                                display: flex;
+                                align-items: center;
+                                gap: 6px;
+                            }
+
+                            .tag span {
+                                cursor: pointer;
+                                font-weight: bold;
+                            }
+                        </style>
                         <!-- Featured & Status -->
                         <div class="col-md-6 d-flex align-items-center">
                             <div class="form-check mt-2">
@@ -94,14 +154,14 @@
                                 <label class="form-check-label" for="featured">À la une</label>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <label for="status" class="form-label">Statut</label>
                             <select class="form-control" id="status" name="status" required>
                                 <option value="Brouillon">Brouillon</option>
                                 <option value="Publié">Publié</option>
                                 <option value="Archivé">Archivé</option>
                             </select>
-                        </div>
+                        </div> -->
 
 
                         <div class="col-md-6">
@@ -155,7 +215,7 @@
                         </div>
                         <!-- Submit Button -->
                         <div class="col-12  mt-3">
-                            <button type="submit" class="btn btn-primary btn-lg px-5">Ajouter l'actualité</button>
+                            <button type="submit" class="btn btn-primary btn-lg px-5" id="add_news">Ajouter l'actualité</button>
                         </div>
                     </div>
                 </form>
@@ -258,6 +318,7 @@
 
 <!-- 2️⃣ Your JS -->
 <script>
+    /***************************************** add image html , remove , change position ****************************************** */
     document.addEventListener('DOMContentLoaded', function() {
         let imageCount = 0;
         const container = document.getElementById('imageContainer');
@@ -325,16 +386,101 @@
                 hiddenInput.value = index + 1;
             });
         }
+
+
+        /******************************************************************************************** */
+let tags = [];
+
+const tagInput = document.getElementById('tagText');
+const tagContainer = document.getElementById('tagInput');
+const hiddenTags = document.getElementById('tags');
+
+tagInput.addEventListener('keydown', function (e) {
+
+    if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+
+        let value = tagInput.value.trim().replace(',', '');
+        if (value === '') return;
+
+        value = value.toLowerCase();
+
+        if (!tags.includes(value)) {
+            tags.push(value);
+            renderTags();
+        }
+
+        tagInput.value = '';
+    }
+});
+
+function renderTags() {
+    tagContainer.querySelectorAll('.tag').forEach(t => t.remove());
+
+    tags.forEach((tag, index) => {
+        const el = document.createElement('div');
+        el.className = 'tag';
+        el.innerHTML = `${tag} <span data-index="${index}">&times;</span>`;
+        tagContainer.insertBefore(el, tagInput);
+    });
+
+    hiddenTags.value = tags.join(',');
+}
+
+tagContainer.addEventListener('click', function (e) {
+    if (e.target.tagName === 'SPAN') {
+        tags.splice(e.target.dataset.index, 1);
+        renderTags();
+    }
+});
+
+        /***********************************************************************************************/
+
+        $('#add_news').click(function(e) {
+
+            e.preventDefault();
+
+            var formData = new FormData();
+            var title = $('#title').val();
+            var category = $('#categories').val();
+            var description = $('#description').val();
+            var featured = $('#featured').is(':checked') ? 1 : 0;
+            var status = $('#status').val();
+            var published_at = $('#published_at').val();
+            var main_image = $('#main_image')[0].files[0];
+            formData.append('title', title);
+            formData.append('category', category);
+            formData.append('description', description);
+            formData.append('featured', featured);
+            formData.append('status', status);
+            formData.append('published_at', published_at);
+            formData.append('main_image', main_image);
+
+             formData.append('tags', $('#tags').val());
+            // Append additional images
+            $('.image-card').each(function() {
+                var imageFile = $(this).find('.image-input')[0].files[0];
+                var position = $(this).data('position');
+                formData.append('images[]', imageFile);
+                formData.append('positions[]', position);
+            });
+            $.ajax({
+                url: 'assets/php/actualites/add_news.php',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    alert('Actualité ajoutée avec succès!');
+                    // location.reload();
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                    alert('Erreur lors de l\'ajout de l\'actualité. Veuillez réessayer.');
+                }
+            });
+
+
+        })
     });
 </script>
-
-<style>
-    .image-card {
-        cursor: grab;
-    }
-
-    .sortable-ghost {
-        opacity: 0.5;
-    }
-</style>
-</style>
