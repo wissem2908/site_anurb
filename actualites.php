@@ -2,7 +2,9 @@
 
 <link href="assets/css/news.css" rel="stylesheet">
 <style>
-
+    .hidden-news {
+        display: none !important;
+    }
 </style>
 
 <!-- Page Header Start -->
@@ -177,7 +179,7 @@
                         </div>
 
 
-                        <div class="recent-news-item d-flex align-items-center" style="cursor:pointer;">
+                        <!-- <div class="recent-news-item d-flex align-items-center" style="cursor:pointer;">
                             <img src="https://picsum.photos/seed/anurb2/60/40" alt="">
                             <div class="ms-2">
                                 <small>Le DG du BNEDER participe à Agri Invest Algeria 2025</small><br>
@@ -211,7 +213,7 @@
                                 <small>Validation de l'étude de classement du massif forestier de l'Akfadou</small><br>
                                 <small class="text-muted">2025-11-23</small>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                     <button class="btn btn-primary btn-view-more w-100 mt-3">Voir plus d'actualités</button>
                 </div>
@@ -465,23 +467,25 @@
 
         /****************************************************** get clicked news ************************************ */
 
-         const slug = $('#newsSlug').val();
+        const slug = $('#newsSlug').val();
 
-    if (!slug) return;
+        if (!slug) return;
 
-    $.ajax({
-        url: 'assets/php/get_news_single.php',
-        type: 'GET',
-        data: { slug: slug },
-        dataType: 'json',
-        success: function(news) {
-            if (!news) return;
+        $.ajax({
+            url: 'assets/php/get_news_single.php',
+            type: 'GET',
+            data: {
+                slug: slug
+            },
+            dataType: 'json',
+            success: function(news) {
+                if (!news) return;
 
-            // Set title
-            $('.news-main h2').text(news.title);
+                // Set title
+                $('.news-main h2').text(news.title);
 
-            // Set author and date
-            $('.news-meta').html(`
+                // Set author and date
+                $('.news-meta').html(`
                 <span>Posté par</span>
                 <a href="#">${news.author_name}</a>
                 <span>le ${news.published_at}</span>
@@ -490,60 +494,62 @@
                 <a href="#">${news.category_name}</a>
             `);
 
-            // Set content
-            $('.news-content').html(news.description);
+                // Set content
+                $('.news-content').html(news.description);
 
-            // Set carousel images
-            const carouselInner = $('#newsImagesCarousel .carousel-inner');
-            carouselInner.empty();
-            news.images.forEach((img, index) => {
-                carouselInner.append(`
+                // Set carousel images
+                const carouselInner = $('#newsImagesCarousel .carousel-inner');
+                carouselInner.empty();
+                news.images.forEach((img, index) => {
+                    carouselInner.append(`
                     <div class="carousel-item ${index === 0 ? 'active' : ''}">
                         <img src="admin/assets/uploads/news/${img}" class="d-block w-100" alt="News image ${index + 1}">
                     </div>
                 `);
-            });
+                });
 
-            // Set carousel indicators
-            const indicators = $('#newsImagesCarousel .carousel-indicators');
-            indicators.empty();
-            news.images.forEach((_, index) => {
-                indicators.append(`
+                // Set carousel indicators
+                const indicators = $('#newsImagesCarousel .carousel-indicators');
+                indicators.empty();
+                news.images.forEach((_, index) => {
+                    indicators.append(`
                     <button type="button" data-bs-target="#newsImagesCarousel" data-bs-slide-to="${index}" class="${index === 0 ? 'active' : ''}" aria-label="Slide ${index + 1}"></button>
                 `);
-            });
-        },
-        error: function(xhr, status, error) {
-            console.error("Erreur lors du chargement de l'article:", error);
-        }
-    });
-
-    /************************************************* actualités lieés******************************************************************** */
-
-    
-
-    if (!slug) return;
-
-    $.ajax({
-        url: 'assets/php/get_related_news.php',
-        type: 'GET',
-        data: { slug: slug },
-        dataType: 'json',
-        success: function(relatedNews) {
-            const container = $('.related-news-modern');
-            const emptyState = $('#emptyRelatedNews');
-
-            container.find('.related-news-modern-item').remove(); // remove existing placeholder items
-
-            if (!relatedNews || relatedNews.length === 0) {
-                emptyState.show();
-                return;
-            } else {
-                emptyState.hide();
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error("Erreur lors du chargement de l'article:", error);
             }
+        });
 
-            relatedNews.forEach(news => {
-                container.append(`
+        /************************************************* actualités lieés******************************************************************** */
+
+
+
+        if (!slug) return;
+
+        $.ajax({
+            url: 'assets/php/get_related_news.php',
+            type: 'GET',
+            data: {
+                slug: slug
+            },
+            dataType: 'json',
+            success: function(relatedNews) {
+                const container = $('.related-news-modern');
+                const emptyState = $('#emptyRelatedNews');
+
+                container.find('.related-news-modern-item').remove(); // remove existing placeholder items
+
+                if (!relatedNews || relatedNews.length === 0) {
+                    emptyState.show();
+                    return;
+                } else {
+                    emptyState.hide();
+                }
+
+                relatedNews.forEach(news => {
+                    container.append(`
                     <a href="actualite.php?news=${news.slug}" class="related-news-modern-item d-flex align-items-center">
                         <div class="thumb">
                             <img src="admin/assets/uploads/news/${news.main_image}" alt="${news.title}">
@@ -554,12 +560,75 @@
                         </div>
                     </a>
                 `);
-            });
-        },
-        error: function(xhr, status, error) {
-            console.error("Erreur lors du chargement des articles liés:", error);
-        }
-    });
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error("Erreur lors du chargement des articles liés:", error);
+            }
+        });
 
+
+
+
+        /************************************************* actualités récentes*********************************************************************/
+        const recentContainer = $('.recent-news');
+        const emptyState = $('#emptyRecentNews');
+        const viewMoreBtn = $('.btn-view-more');
+        const newsPerPage = 3; // Number of news to show at a time
+
+        // Load all recent news
+        $.ajax({
+            url: 'assets/php/get_recent_news.php',
+            type: 'GET',
+            dataType: 'json',
+            success: function(recentNews) {
+                if (!recentNews || recentNews.length === 0) {
+                    emptyState.show();
+                    viewMoreBtn.hide();
+                    return;
+                }
+
+                emptyState.hide();
+
+                // Track how many are currently visible
+                let visibleCount = 0;
+
+                // Function to render next batch
+                function renderNextBatch() {
+                    let nextBatch = recentNews.slice(visibleCount, visibleCount + newsPerPage);
+                    nextBatch.forEach(news => {
+                        recentContainer.append(`
+                    <div class="recent-news-item d-flex align-items-center" 
+                         style="cursor:pointer;" 
+                         onclick="window.location='actualite.php?news=${news.slug}'">
+                        <img src="admin/assets/uploads/news/${news.main_image}" alt="${news.title}">
+                        <div class="ms-2">
+                            <small>${news.title}</small><br>
+                            <small class="text-muted">${news.published_at}</small>
+                        </div>
+                    </div>
+                `);
+                    });
+
+                    visibleCount += nextBatch.length;
+
+                    // Hide button if all news are displayed
+                    if (visibleCount >= recentNews.length) {
+                        viewMoreBtn.hide();
+                    }
+                }
+
+                // Show first batch
+                renderNextBatch();
+
+                // Show more button click
+                viewMoreBtn.off('click').on('click', function() {
+                    renderNextBatch();
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error("Erreur lors du chargement des actualités récentes:", error);
+            }
+        });
     });
 </script>
