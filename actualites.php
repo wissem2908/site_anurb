@@ -28,19 +28,15 @@
             <div class="col-lg-8">
 
                 <!-- Featured News -->
-
                 <div class="featured-news mb-4">
                     <div class="featured-overlay">
                         <span class="badge-featured">À la une</span>
-                        <h3>Projet stratégique de développement territorial</h3>
-                        <p>
-                            L’ANURB lance un projet structurant visant l’aménagement durable
-                            et la modernisation urbaine.
-                        </p>
-                        <a href="#" class="btn btn-light btn-sm">Lire l’article</a>
+                        <h3>Chargement...</h3>
+                        <p>Veuillez patienter...</p>
                     </div>
                 </div>
 
+                <input type="hidden" id="newsSlug" value="<?php echo isset($_GET['news']) ? htmlspecialchars($_GET['news']) : ''; ?>">
                 <div class="news-main">
                     <div id="newsImagesCarousel" class="carousel slide news-carousel mb-3" data-bs-ride="carousel">
                         <div class="carousel-indicators">
@@ -104,7 +100,7 @@
 
                 <!-- Tags & Filters -->
                 <div class="sidebar-card">
-                    <h5>Filtrer par Tags</h5>
+                    <h5>Filtrer par Category</h5>
                     <div class="tags-filters">
                         <button class="btn btn-outline-secondary btn-sm filter-btn" data-tag="urbanisme">Urbanisme</button>
                         <button class="btn btn-outline-secondary btn-sm filter-btn" data-tag="agriculture">Agriculture</button>
@@ -150,7 +146,7 @@
                         </a>
 
 
-                        
+
                         <!-- Article 2 -->
                         <a href="#" class="related-news-modern-item d-flex align-items-center">
                             <div class="thumb">
@@ -399,10 +395,171 @@
             });
         });
     });
-
-
 </script>
 
 
 
 <?php include 'includes/footer.php'; ?>
+
+
+<script>
+    $(document).ready(function() {
+        $.ajax({
+            url: 'assets/php/get_featured_news.php',
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                if (response.success && response.news) {
+                    const news = response.news;
+                    const html = `
+                    <div class="featured-news mb-4">
+                        <img src="admin/assets/uploads/news/${news.main_image}" alt="${news.title}" class="w-100">
+                        <div class="featured-overlay">
+                            <span class="badge-featured">À la une</span>
+                            <h3>${news.title}</h3>
+                            <p>${news.description}</p>
+                            <a href="actualite.php?slug=${news.slug}" class="btn btn-light btn-sm">Lire l’article</a>
+                        </div>
+                    </div>
+                `;
+                    $('.featured-news').replaceWith(html);
+                } else {
+                    console.log('No featured news found');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+            }
+        });
+
+        /************************************* get categories**************************************** */
+
+        const $categoriesContainer = $(".tags-filters");
+
+        // Load categories from the server
+        $.ajax({
+            url: 'assets/php/get_categories.php', // PHP file that returns JSON
+            type: 'GET',
+            dataType: 'json',
+            success: function(categories) {
+                // Clear container
+                $categoriesContainer.empty();
+
+                // Optional: Add "All" button
+                $categoriesContainer.append(
+                    `<button class="btn btn-outline-secondary btn-sm filter-btn active" data-category="all">Toutes</button>`
+                );
+
+                // Add buttons for each category
+                categories.forEach(cat => {
+                    $categoriesContainer.append(
+                        `<button class="btn btn-outline-secondary btn-sm filter-btn" data-category="${cat.id_category}">${cat.category_name}</button>`
+                    );
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error("Erreur lors du chargement des catégories:", error);
+            }
+        });
+
+
+        /****************************************************** get clicked news ************************************ */
+
+         const slug = $('#newsSlug').val();
+
+    if (!slug) return;
+
+    $.ajax({
+        url: 'assets/php/get_news_single.php',
+        type: 'GET',
+        data: { slug: slug },
+        dataType: 'json',
+        success: function(news) {
+            if (!news) return;
+
+            // Set title
+            $('.news-main h2').text(news.title);
+
+            // Set author and date
+            $('.news-meta').html(`
+                <span>Posté par</span>
+                <a href="#">${news.author_name}</a>
+                <span>le ${news.published_at}</span>
+                <span>|</span>
+                <span>Catégorie:</span>
+                <a href="#">${news.category_name}</a>
+            `);
+
+            // Set content
+            $('.news-content').html(news.description);
+
+            // Set carousel images
+            const carouselInner = $('#newsImagesCarousel .carousel-inner');
+            carouselInner.empty();
+            news.images.forEach((img, index) => {
+                carouselInner.append(`
+                    <div class="carousel-item ${index === 0 ? 'active' : ''}">
+                        <img src="admin/assets/uploads/news/${img}" class="d-block w-100" alt="News image ${index + 1}">
+                    </div>
+                `);
+            });
+
+            // Set carousel indicators
+            const indicators = $('#newsImagesCarousel .carousel-indicators');
+            indicators.empty();
+            news.images.forEach((_, index) => {
+                indicators.append(`
+                    <button type="button" data-bs-target="#newsImagesCarousel" data-bs-slide-to="${index}" class="${index === 0 ? 'active' : ''}" aria-label="Slide ${index + 1}"></button>
+                `);
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error("Erreur lors du chargement de l'article:", error);
+        }
+    });
+
+    /************************************************* actualités lieés******************************************************************** */
+
+    
+
+    if (!slug) return;
+
+    $.ajax({
+        url: 'assets/php/get_related_news.php',
+        type: 'GET',
+        data: { slug: slug },
+        dataType: 'json',
+        success: function(relatedNews) {
+            const container = $('.related-news-modern');
+            const emptyState = $('#emptyRelatedNews');
+
+            container.find('.related-news-modern-item').remove(); // remove existing placeholder items
+
+            if (!relatedNews || relatedNews.length === 0) {
+                emptyState.show();
+                return;
+            } else {
+                emptyState.hide();
+            }
+
+            relatedNews.forEach(news => {
+                container.append(`
+                    <a href="actualite.php?news=${news.slug}" class="related-news-modern-item d-flex align-items-center">
+                        <div class="thumb">
+                            <img src="admin/assets/uploads/news/${news.main_image}" alt="${news.title}">
+                        </div>
+                        <div class="text ms-3">
+                            <small class="title">${news.title}</small>
+                            <small class="date text-muted">${news.published_at}</small>
+                        </div>
+                    </a>
+                `);
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error("Erreur lors du chargement des articles liés:", error);
+        }
+    });
+
+    });
+</script>
