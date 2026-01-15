@@ -5,38 +5,41 @@
     .hidden-news {
         display: none !important;
     }
-/* calendar.css */
-.calendar-days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
-}
 
-.calendar-days span {
-    position: relative;          /* REQUIRED */
-    display: flex;               /* REQUIRED */
-    align-items: center;
-    justify-content: center;
-    height: 38px;
-    border-radius: 6px;
-    cursor: pointer;
-}
+    /* calendar.css */
+    .calendar-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 6px;
+    }
 
-.calendar-indicator {
-    position: absolute;
-    /* bottom: 4px; */
-    width: 4px;
-    height: 2px !important;
-    background-color: #28a745;
-    border-radius: 50%;
-}
+    .calendar-days span {
+        position: relative;
+        /* REQUIRED */
+        display: flex;
+        /* REQUIRED */
+        align-items: center;
+        justify-content: center;
+        height: 38px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .calendar-indicator {
+        position: absolute;
+        /* bottom: 4px; */
+        width: 4px;
+        height: 2px !important;
+        background-color: #28a745;
+        border-radius: 50%;
+    }
 
 
-.calendar-days span.selected {
-    background: #007bff;
-    color: #fff;
-    border-radius: 6px;
-}
+    .calendar-days span.selected {
+        background: #007bff;
+        color: #fff;
+        border-radius: 6px;
+    }
 </style>
 
 <!-- Page Header Start -->
@@ -287,7 +290,6 @@
 
 
 <script>
- 
     /*******************************************************************************************/
 
     const filterButtons = document.querySelectorAll(".filter-btn");
@@ -383,7 +385,7 @@
 
         const slug = $('#newsSlug').val();
 
-      
+
 
         $.ajax({
             url: 'assets/php/get_news_single.php',
@@ -400,13 +402,17 @@
 
                 // Set author and date
                 $('.news-meta').html(`
-                <span>Posté par</span>
-                <a href="#">${news.author_name}</a>
-                <span>le ${news.published_at}</span>
-                <span>|</span>
-                <span>Catégorie:</span>
-                <a href="#">${news.category_name}</a>
-            `);
+                    <span>Posté par</span>
+                    <a href="#">${news.author_name}</a>
+                    <span>le ${news.published_at}</span>
+                    <span>|</span>
+                    <span>Catégorie:</span>
+                    <a href="#">${news.category_name}</a>
+                    <span>|</span>
+                    <span class="news-views">
+                       ${news.views + 1} vues
+                    </span>
+                `);
 
                 // Set content
                 $('.news-content').html(news.description);
@@ -593,108 +599,110 @@
     });
 
     /***************************calendar news ************************************************************************ */
-let currentDate = new Date();
-let selectedDate = null;
+    let currentDate = new Date();
+    let selectedDate = null;
 
-const monthNames = [
-    "Janvier","Février","Mars","Avril","Mai","Juin",
-    "Juillet","Août","Septembre","Octobre","Novembre","Décembre"
-];
+    const monthNames = [
+        "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+        "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+    ];
 
-const monthYear   = document.getElementById("monthYear");
-const calendarDays = document.getElementById("calendarDays");
-const calendarNews = document.getElementById("calendar-news");
+    const monthYear = document.getElementById("monthYear");
+    const calendarDays = document.getElementById("calendarDays");
+    const calendarNews = document.getElementById("calendar-news");
 
-let newsDates = [];
+    let newsDates = [];
 
-/* ===============================
-   LOAD NEWS DATES (INDICATORS)
-================================ */
-$.getJSON('assets/php/get_news_dates.php', function(dates) {
-    newsDates = dates || [];
-    renderCalendar(currentDate);
-});
+    /* ===============================
+       LOAD NEWS DATES (INDICATORS)
+    ================================ */
+    $.getJSON('assets/php/get_news_dates.php', function(dates) {
+        newsDates = dates || [];
+        renderCalendar(currentDate);
+    });
 
-/* ===============================
-   RENDER CALENDAR
-================================ */
-function renderCalendar(date) {
-    calendarDays.innerHTML = "";
-    monthYear.textContent = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+    /* ===============================
+       RENDER CALENDAR
+    ================================ */
+    function renderCalendar(date) {
+        calendarDays.innerHTML = "";
+        monthYear.textContent = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
 
-    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).getDay() || 7;
-    const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+        const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).getDay() || 7;
+        const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
 
-    // Empty slots before first day
-    for (let i = 1; i < firstDay; i++) {
-        const empty = document.createElement("span");
-        empty.classList.add("disabled");
-        calendarDays.appendChild(empty);
-    }
-
-    for (let day = 1; day <= daysInMonth; day++) {
-        const dayEl = document.createElement("span");
-        dayEl.textContent = day;
-
-        const dayStr = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-
-
-
-        console.log("Checking date:", dayStr);
-        console.log("News dates:", newsDates);
-        /* Indicator if news exists */
-        if (newsDates.includes(dayStr)) {
-            
-            const indicator = document.createElement("span");
-            indicator.classList.add("calendar-indicator");
-            dayEl.appendChild(indicator);
+        // Empty slots before first day
+        for (let i = 1; i < firstDay; i++) {
+            const empty = document.createElement("span");
+            empty.classList.add("disabled");
+            calendarDays.appendChild(empty);
         }
 
-        /* Highlight today */
-        const today = new Date();
-        if (
-            day === today.getDate() &&
-            date.getMonth() === today.getMonth() &&
-            date.getFullYear() === today.getFullYear()
-        ) {
-            dayEl.classList.add("today");
-        }
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayEl = document.createElement("span");
+            dayEl.textContent = day;
 
-        /* Click event */
-        dayEl.addEventListener("click", () => {
-            document.querySelectorAll(".calendar-days span")
-                .forEach(d => d.classList.remove("selected"));
+            const dayStr = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
 
-            dayEl.classList.add("selected");
-            selectedDate = dayStr;
-            fetchNewsByDate(selectedDate);
-        });
 
-        calendarDays.appendChild(dayEl);
-    }
-}
 
-/* ===============================
-   FETCH NEWS BY DATE
-================================ */
-function fetchNewsByDate(date) {
-    $.ajax({
-        url: 'assets/php/get_news_by_date.php',
-        type: 'GET',
-        data: { date: date },
-        dataType: 'json',
-        success: function(newsList) {
-            calendarNews.innerHTML = "";
+            console.log("Checking date:", dayStr);
+            console.log("News dates:", newsDates);
+            /* Indicator if news exists */
+            if (newsDates.includes(dayStr)) {
 
-            if (!newsList || newsList.length === 0) {
-                calendarNews.innerHTML = `<p><em>Aucune actualité pour ce jour.</em></p>`;
-                return;
+                const indicator = document.createElement("span");
+                indicator.classList.add("calendar-indicator");
+                dayEl.appendChild(indicator);
             }
 
-            calendarNews.innerHTML = `<strong class="d-block mb-2">Actualités du ${date}</strong>`;
+            /* Highlight today */
+            const today = new Date();
+            if (
+                day === today.getDate() &&
+                date.getMonth() === today.getMonth() &&
+                date.getFullYear() === today.getFullYear()
+            ) {
+                dayEl.classList.add("today");
+            }
 
-            newsList.forEach(news => {
-                calendarNews.innerHTML += `
+            /* Click event */
+            dayEl.addEventListener("click", () => {
+                document.querySelectorAll(".calendar-days span")
+                    .forEach(d => d.classList.remove("selected"));
+
+                dayEl.classList.add("selected");
+                selectedDate = dayStr;
+                fetchNewsByDate(selectedDate);
+            });
+
+            calendarDays.appendChild(dayEl);
+        }
+    }
+
+    /* ===============================
+       FETCH NEWS BY DATE
+    ================================ */
+    function fetchNewsByDate(date) {
+        $.ajax({
+            url: 'assets/php/get_news_by_date.php',
+            type: 'GET',
+            data: {
+                date: date
+            },
+            dataType: 'json',
+            success: function(newsList) {
+                calendarNews.innerHTML = "";
+
+                if (!newsList || newsList.length === 0) {
+                    calendarNews.innerHTML = `<p><em>Aucune actualité pour ce jour.</em></p>`;
+                    return;
+                }
+
+                calendarNews.innerHTML = `<strong class="d-block mb-2">Actualités du ${date}</strong>`;
+
+                newsList.forEach(news => {
+                    calendarNews.innerHTML += `
                     <div class="recent-news-item d-flex align-items-center mb-2"
                          style="cursor:pointer;"
                          onclick="window.location='actualites.php?news=${news.slug}'">
@@ -711,25 +719,24 @@ function fetchNewsByDate(date) {
                         </div>
                     </div>
                 `;
-            });
-        },
-        error: function(err) {
-            console.error("Erreur chargement actualités :", err);
-        }
-    });
-}
+                });
+            },
+            error: function(err) {
+                console.error("Erreur chargement actualités :", err);
+            }
+        });
+    }
 
-/* ===============================
-   NAVIGATION
-================================ */
-document.getElementById("prevMonth").onclick = () => {
-    currentDate.setMonth(currentDate.getMonth() - 1);
-    renderCalendar(currentDate);
-};
+    /* ===============================
+       NAVIGATION
+    ================================ */
+    document.getElementById("prevMonth").onclick = () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderCalendar(currentDate);
+    };
 
-document.getElementById("nextMonth").onclick = () => {
-    currentDate.setMonth(currentDate.getMonth() + 1);
-    renderCalendar(currentDate);
-};
-
+    document.getElementById("nextMonth").onclick = () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderCalendar(currentDate);
+    };
 </script>
