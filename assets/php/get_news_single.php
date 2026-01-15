@@ -1,13 +1,7 @@
 <?php
 include './config.php';
 
-if (!isset($_GET['slug'])) {
-    http_response_code(400);
-    echo json_encode(null);
-    exit;
-}
-
-$slug = $_GET['slug'];
+$slug = $_GET['slug'] ?? null;
 
 try {
     $bdd = new PDO(
@@ -17,17 +11,31 @@ try {
         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
     );
 
-    // Get main news details
-    $stmt = $bdd->prepare("
-        SELECT n.title, n.description, n.published_at, n.main_image, 
-               c.category_name, u.username AS author_name
-        FROM news n
-        LEFT JOIN news_categories c ON n.category_id = c.id_category
-        LEFT JOIN users u ON n.author_id = u.id_user 
-        WHERE n.slug = :slug AND n.status = 'Publié'
-        LIMIT 1
-    ");
-    $stmt->execute(['slug' => $slug]);
+    // 1. Get article (by slug OR latest)
+    if ($slug) {
+        $stmt = $bdd->prepare("
+            SELECT n.news_id, n.title, n.description, n.published_at, n.main_image, n.views,
+                   c.category_name, u.username AS author_name
+            FROM news n
+            LEFT JOIN news_categories c ON n.category_id = c.id_category
+            LEFT JOIN users u ON n.author_id = u.id_user
+            WHERE n.slug = :slug AND n.status = 'Publié'
+            LIMIT 1
+        ");
+        $stmt->execute(['slug' => $slug]);
+    } else {
+        $stmt = $bdd->query("
+            SELECT n.news_id, n.title, n.description, n.published_at, n.main_image, n.views,
+                   c.category_name, u.username AS author_name
+            FROM news n
+            LEFT JOIN news_categories c ON n.category_id = c.id_category
+            LEFT JOIN users u ON n.author_id = u.id_user
+            WHERE n.status = 'Publié'
+            ORDER BY n.published_at DESC
+            LIMIT 1
+        ");
+    }
+
     $news = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$news) {
@@ -35,14 +43,23 @@ try {
         exit;
     }
 
-    // Get additional images
-    $stmt2 = $bdd->prepare("SELECT image FROM news_images WHERE news_id = (SELECT news_id FROM news WHERE slug = :slug) ORDER BY position ASC");
-    $stmt2->execute(['slug' => $slug]);
+    // 2. Increment views (SERVER SIDE)
+    $update = $bdd->prepare("
+        UPDATE news SET views = views + 1 WHERE news_id = ?
+    ");
+    $update->execute([$news['news_id']]);
+
+    // 3. Fetch images
+    $stmt2 = $bdd->prepare("
+        SELECT image 
+        FROM news_images 
+        WHERE news_id = ?
+        ORDER BY position ASC
+    ");
+    $stmt2->execute([$news['news_id']]);
     $images = $stmt2->fetchAll(PDO::FETCH_COLUMN);
 
-    // Include main image as first
     array_unshift($images, $news['main_image']);
-
     $news['images'] = $images;
 
     echo json_encode($news);
