@@ -17,6 +17,10 @@
     .sortable-ghost {
         opacity: 0.5;
     }
+
+    .ck-editor__editable {
+        min-height: 400px !important;
+    }
 </style>
 
 
@@ -100,6 +104,8 @@
                             <label for="description" class="form-label">Description</label>
                             <textarea class="form-control" id="description" name="description" rows="5" placeholder="Contenu de la news" required></textarea>
                         </div>
+
+
                         <div class="col-md-12">
                             <label class="form-label">Tags</label>
 
@@ -154,7 +160,7 @@
                         <!-- Featured & Status -->
                         <div class="col-md-6 d-flex align-items-center">
                             <div class="form-check mt-2">
-                                <input class="form-check-input" type="checkbox" id="featured" name="featured" value="1">
+                                <input class="form-check-input" type="checkbox" id="featured" name="featured" >
                                 <label class="form-check-label" for="featured">À la une</label>
                             </div>
                         </div>
@@ -277,7 +283,7 @@
                             '<td>' + data[i].news_date_creation + '</td>' +
                             '<td class="text-center">' +
                             '<div class="btn-group" role="group">' +
-                            '<a class="btn btn-sm btn-outline-primary editNewsBtn"  href="edit_news.php?id='+data[i].news_id+'" target="_blank">' +
+                            '<a class="btn btn-sm btn-outline-primary editNewsBtn"  href="edit_news.php?id=' + data[i].news_id + '" target="_blank">' +
                             '<i class="fas fa-edit"></i>' +
                             '</a>' +
                             '<button class="btn btn-sm btn-outline-danger deleteNewsBtn" id="deleteNews" data-id="' + data[i].news_id + '" title="Supprimer">' +
@@ -302,8 +308,8 @@
 
 
         $(document).on('click', '#deleteNews', function() {
-            
-                    Swal.fire({
+
+            Swal.fire({
                 title: "Êtes-vous sûr ?",
                 icon: "warning",
                 showCancelButton: true,
@@ -330,7 +336,7 @@
                             console.log(res); // check response
                             if (res.success) {
                                 Swal.fire("Succès !", "L'actualité a été supprimé avec succès.", "success");
-                                 fetchNewsList()
+                                fetchNewsList()
                             } else {
                                 Swal.fire("Error!", res.message, "error");
                             }
@@ -513,7 +519,8 @@
             var formData = new FormData();
             var title = $('#title').val();
             var category = $('#categories').val();
-            var description = $('#description').val();
+            // var description = $('#description').val();
+            const description = descriptionEditor.getData().trim();
             var featured = $('#featured').is(':checked') ? 1 : 0;
             var status = $('#status').val();
             var published_at = $('#published_at').val();
@@ -553,4 +560,23 @@
 
         })
     });
+</script>
+
+<script>
+    ClassicEditor
+        .create(document.querySelector('#description'), {
+            toolbar: {
+                items: [
+                    'heading', '|', 'bold', 'italic', 'underline', 'strikethrough',
+                    '|', 'link', 'bulletedList', 'numberedList', '|', 'undo', 'redo'
+                ]
+            }
+        })
+        .then(editor => {
+            descriptionEditor = editor;
+            editor.ui.view.editable.element.style.minHeight = '400px';
+        })
+        .catch(error => {
+            console.error(error);
+        });
 </script>
