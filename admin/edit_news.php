@@ -1,78 +1,17 @@
 <?php include "includes/header.php"; ?>
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
 
+                    <!-- Page Heading -->
+                    <!-- <h1 class="h3 mb-4 text-gray-800">Blank Page</h1> -->
 
-<style>
-    .dataTables_filter {
-        float: right;
-    }
-
-    .pagination {
-        float: right;
-    }
-
-    .image-card {
-        cursor: grab;
-    }
-
-    .sortable-ghost {
-        opacity: 0.5;
-    }
-</style>
-
-
-<!-- Begin Page Content -->
-<div class="container-fluid">
-    <button class="btn btn-primary float-right" id="add_news_btn">Ajouter actualité</button>
-    <!-- Page Heading -->
-    <h1 class="h3 mb-4 text-gray-800">Actualités</h1>
-
-    <div class="card shadow mb-4" id="news_list_card">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Liste des actualités</h6>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered" id="news_table" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>Image</th>
-                            <th>Titre</th>
-                            <th>Categorie</th>
-                            <th>Views</th>
-                            <th>Créé par</th>
-                            <th>Status</th>
-                            <th>Date de creation</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tfoot>
-                        <tr>
-                            <th>Image</th>
-                            <th>Titre</th>
-                            <th>Categorie</th>
-                            <th>Views</th>
-                            <th>Créé par</th>
-                            <th>Status</th>
-                            <th>Date de creation</th>
-                            <th>Action</th>
-                        </tr>
-                    </tfoot>
-                    <tbody>
-
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div class="card shadow mb-4" id="add_news_card" style='display:none;'>
+                     <div class="card shadow mb-4" id="add_news_card" >
 
 
 
         <div class="card shadow-sm">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Ajouter une Actualité</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Modifier l'actualité</h6>
             </div>
             <div class="card-body">
                 <form action="add_news.php" method="POST" enctype="multipart/form-data">
@@ -226,144 +165,16 @@
             </div>
         </div>
     </div>
-</div>
-<!-- /.container-fluid -->
 
-<?php include "includes/footer.php"; ?>
+                </div>
+                <!-- /.container-fluid -->
 
-<script>
-    // Call the dataTables jQuery plugin
-    $(document).ready(function() {
+    <?php include "includes/footer.php"; ?>        
 
 
 
-
-        /********************************************* get news list**************************************************** */
-
-        function getStatusBadge(status) {
-            switch (status) {
-                case 'Publié':
-                    return '<span class="badge badge-success">Publié</span>';
-
-                case 'Archivé':
-                    return '<span class="badge badge-secondary">Archivé</span>';
-
-                case 'Brouillon':
-                case 'Brouillon':
-                    return '<span class="badge bg-warning text-dark">Brouillon</span>';
-
-                default:
-                    return '<span class="badge bg-light text-dark">' + status + '</span>';
-            }
-        }
-
-        function fetchNewsList() {
-            $.ajax({
-                url: 'assets/php/actualites/fetch_news.php',
-                method: 'POST',
-                success: function(response) {
-
-                    var data = JSON.parse(response);
-
-                    var news_liste = '';
-                    for (i = 0; i < data.length; i++) {
-                        news_liste += '<tr>' +
-                            '<td class="text-center"><img src="./assets/uploads/news/' + data[i].main_image + '" width="50" class="img-thumbnail "></td>' +
-                            '<td>' + data[i].title + '</td>' +
-                            '<td>' + data[i].category_name + '</td>' +
-                            '<td>' + data[i].views + '</td>' +
-                            '<td>' + data[i].username + '</td>' +
-                            '<td>' + getStatusBadge(data[i].status) + '</td>' +
-                            '<td>' + data[i].news_date_creation + '</td>' +
-                            '<td class="text-center">' +
-                            '<div class="btn-group" role="group">' +
-                            '<a class="btn btn-sm btn-outline-primary editNewsBtn"  href="edit_news.php?id='+data[i].news_id+'" target="_blank">' +
-                            '<i class="fas fa-edit"></i>' +
-                            '</a>' +
-                            '<button class="btn btn-sm btn-outline-danger deleteNewsBtn" id="deleteNews" data-id="' + data[i].news_id + '" title="Supprimer">' +
-                            '<i class="fas fa-trash"></i>' +
-                            '</button>' +
-                            '</div>' +
-                            '</td>' +
-                            '</tr>';
-                    }
-                    $('#news_table tbody').empty();
-                    $('#news_table tbody').append(news_liste);
-
-                    $('#news_table').DataTable();
-
-                }
-            });
-        }
-
-        fetchNewsList()
-
-        /*********************************** delete news *************************************** */
-
-
-        $(document).on('click', '#deleteNews', function() {
-            
-                    Swal.fire({
-                title: "Êtes-vous sûr ?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Oui",
-                cancelButtonText: "Annuler"
-            }).then((result) => {
-
-                console.log(result); // check if this fires
-
-                if (result.value) {
-
-
-
-
-                    $.ajax({
-                        url: 'assets/php/actualites/delete_news.php',
-                        method: 'POST',
-                        data: {
-                            id: $(this).data('id')
-                        },
-                        success: function(res) {
-                            console.log(res)
-                            // res = JSON.parse(res);
-                            console.log(res); // check response
-                            if (res.success) {
-                                Swal.fire("Succès !", "L'actualité a été supprimé avec succès.", "success");
-                                 fetchNewsList()
-                            } else {
-                                Swal.fire("Error!", res.message, "error");
-                            }
-                        }
-
-                    })
-
-
-
-                }
-
-            });
-
-        })
-        /***************************************** add news ************************************** */
-
-        /******************************************************************************************* */
-
-        $('#add_news_btn').on('click', function() {
-            const isAddMode = $('#add_news_card').is(':hidden');
-
-            if (isAddMode) {
-                $('#news_list_card').hide();
-                $('#add_news_card').show();
-                $(this).text('Retour à la liste des actualités');
-            } else {
-                $('#add_news_card').hide();
-                $('#news_list_card').show();
-                $(this).text('Ajouter une actualité');
-            }
-        });
-    });
-
+    <script>
+        $(document).ready(function(){
 
 
     /************************************** get category **************************************/
@@ -383,8 +194,13 @@
         });
     }
     fetchCategories()
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.6/Sortable.min.js" integrity="sha512-csIng5zcB+XpulRUa+ev1zKo7zRNGpEaVfNB9On1no9KYTEY/rLGAEEpvgdw6nim1WdTuihZY1eqZ31K7/fZjw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+            
+        })
+    </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.6/Sortable.min.js" integrity="sha512-csIng5zcB+XpulRUa+ev1zKo7zRNGpEaVfNB9On1no9KYTEY/rLGAEEpvgdw6nim1WdTuihZY1eqZ31K7/fZjw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <!-- 2️⃣ Your JS -->
 <script>
@@ -506,51 +322,6 @@
 
         /***********************************************************************************************/
 
-        $('#add_news').click(function(e) {
-
-            e.preventDefault();
-
-            var formData = new FormData();
-            var title = $('#title').val();
-            var category = $('#categories').val();
-            var description = $('#description').val();
-            var featured = $('#featured').is(':checked') ? 1 : 0;
-            var status = $('#status').val();
-            var published_at = $('#published_at').val();
-            var main_image = $('#main_image')[0].files[0];
-            formData.append('title', title);
-            formData.append('category', category);
-            formData.append('description', description);
-            formData.append('featured', featured);
-            formData.append('status', status);
-            formData.append('published_at', published_at);
-            formData.append('main_image', main_image);
-
-            formData.append('tags', $('#tags').val());
-            // Append additional images
-            $('.image-card').each(function() {
-                var imageFile = $(this).find('.image-input')[0].files[0];
-                var position = $(this).data('position');
-                formData.append('images[]', imageFile);
-                formData.append('positions[]', position);
-            });
-            $.ajax({
-                url: 'assets/php/actualites/add_news.php',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    alert('Actualité ajoutée avec succès!');
-                    // location.reload();
-                },
-                error: function(xhr, status, error) {
-                    console.error(error);
-                    alert('Erreur lors de l\'ajout de l\'actualité. Veuillez réessayer.');
-                }
-            });
-
-
-        })
+      
     });
 </script>
