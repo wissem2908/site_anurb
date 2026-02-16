@@ -336,7 +336,7 @@
                             <span class="badge-featured">À la une</span>
                             <h3>${news.title}</h3>
                             <p>${news.description}</p>
-                            <a href="actualite.php?slug=${news.slug}" class="btn btn-light btn-sm">Lire l’article</a>
+                            <a href="actualites.php?slug=${news.slug}" class="btn btn-light btn-sm">Lire l’article</a>
                         </div>
                     </div>
                 `;
@@ -470,7 +470,7 @@
 
                 relatedNews.forEach(news => {
                     container.append(`
-                    <a href="actualite.php?news=${news.slug}" class="related-news-modern-item d-flex align-items-center">
+                    <a href="actualites.php?news=${news.slug}" class="related-news-modern-item d-flex align-items-center">
                         <div class="thumb">
                             <img src="admin/assets/uploads/news/${news.main_image}" alt="${news.title}">
                         </div>
@@ -520,7 +520,7 @@
                         recentContainer.append(`
                     <div class="recent-news-item d-flex align-items-center" 
                          style="cursor:pointer;" 
-                         onclick="window.location='actualite.php?news=${news.slug}'">
+                         onclick="window.location='actualites.php?news=${news.slug}'">
                         <img src="admin/assets/uploads/news/${news.main_image}" alt="${news.title}">
                         <div class="ms-2">
                             <small>${news.title}</small><br>
@@ -581,7 +581,7 @@
 
                     newsList.forEach(news => {
                         resultsContainer.append(`
-                    <div class="search-item d-flex align-items-center p-2" style="cursor:pointer;" onclick="window.location='actualite.php?news=${news.slug}'">
+                    <div class="search-item d-flex align-items-center p-2" style="cursor:pointer;" onclick="window.location='actualites.php?news=${news.slug}'">
                         <img src="admin/assets/uploads/news/${news.main_image}" alt="${news.title}" style="width:50px; height:40px; object-fit:cover; margin-right:8px;">
                         <div>
                             <small>${news.title}</small><br>

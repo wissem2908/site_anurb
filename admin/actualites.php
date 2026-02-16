@@ -67,9 +67,13 @@
     </div>
 
     <div class="card shadow mb-4" id="add_news_card" style='display:none;'>
-        <h2 class="mb-4 text-center">Ajouter une Actualité</h2>
+
+
 
         <div class="card shadow-sm">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Ajouter une Actualité</h6>
+            </div>
             <div class="card-body">
                 <form action="add_news.php" method="POST" enctype="multipart/form-data">
                     <div class="row g-3">
@@ -236,6 +240,23 @@
 
         /********************************************* get news list**************************************************** */
 
+        function getStatusBadge(status) {
+            switch (status) {
+                case 'Publié':
+                    return '<span class="badge badge-success">Publié</span>';
+
+                case 'Archivé':
+                    return '<span class="badge badge-secondary">Archivé</span>';
+
+                case 'Brouillon':
+                case 'Brouillon':
+                    return '<span class="badge bg-warning text-dark">Brouillon</span>';
+
+                default:
+                    return '<span class="badge bg-light text-dark">' + status + '</span>';
+            }
+        }
+
         function fetchNewsList() {
             $.ajax({
                 url: 'assets/php/actualites/fetch_news.php',
@@ -247,19 +268,19 @@
                     var news_liste = '';
                     for (i = 0; i < data.length; i++) {
                         news_liste += '<tr>' +
-                            '<td class="text-center"><img src="../assets/images/news/' + data[i].main_image + '" width="50" class="img-thumbnail "></td>' +
+                            '<td class="text-center"><img src="./assets/uploads/news/' + data[i].main_image + '" width="50" class="img-thumbnail "></td>' +
                             '<td>' + data[i].title + '</td>' +
                             '<td>' + data[i].category_name + '</td>' +
                             '<td>' + data[i].views + '</td>' +
                             '<td>' + data[i].username + '</td>' +
-                            '<td>' + data[i].status + '</td>' +
+                            '<td>' + getStatusBadge(data[i].status) + '</td>' +
                             '<td>' + data[i].news_date_creation + '</td>' +
                             '<td class="text-center">' +
                             '<div class="btn-group" role="group">' +
                             '<button class="btn btn-sm btn-outline-primary editNewsBtn" data-id="' + data[i].news_id + '" title="Modifier">' +
                             '<i class="fas fa-edit"></i>' +
                             '</button>' +
-                            '<button class="btn btn-sm btn-outline-danger deleteNewsBtn" data-id="' + data[i].news_id + '" title="Supprimer">' +
+                            '<button class="btn btn-sm btn-outline-danger deleteNewsBtn" id="deleteNews" data-id="' + data[i].news_id + '" title="Supprimer">' +
                             '<i class="fas fa-trash"></i>' +
                             '</button>' +
                             '</div>' +
@@ -277,7 +298,56 @@
 
         fetchNewsList()
 
+        /*********************************** delete news *************************************** */
+
+
+        $(document).on('click', '#deleteNews', function() {
+            
+                    Swal.fire({
+                title: "Êtes-vous sûr ?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Oui",
+                cancelButtonText: "Annuler"
+            }).then((result) => {
+
+                console.log(result); // check if this fires
+
+                if (result.value) {
+
+
+
+
+                    $.ajax({
+                        url: 'assets/php/actualites/delete_news.php',
+                        method: 'POST',
+                        data: {
+                            id: $(this).data('id')
+                        },
+                        success: function(res) {
+                            console.log(res)
+                            // res = JSON.parse(res);
+                            console.log(res); // check response
+                            if (res.success) {
+                                Swal.fire("Succès !", "L'actualité a été supprimé avec succès.", "success");
+                                 fetchNewsList()
+                            } else {
+                                Swal.fire("Error!", res.message, "error");
+                            }
+                        }
+
+                    })
+
+
+
+                }
+
+            });
+
+        })
         /***************************************** add news ************************************** */
+
+        /******************************************************************************************* */
 
         $('#add_news_btn').on('click', function() {
             const isAddMode = $('#add_news_card').is(':hidden');
@@ -389,50 +459,50 @@
 
 
         /******************************************************************************************** */
-let tags = [];
+        let tags = [];
 
-const tagInput = document.getElementById('tagText');
-const tagContainer = document.getElementById('tagInput');
-const hiddenTags = document.getElementById('tags');
+        const tagInput = document.getElementById('tagText');
+        const tagContainer = document.getElementById('tagInput');
+        const hiddenTags = document.getElementById('tags');
 
-tagInput.addEventListener('keydown', function (e) {
+        tagInput.addEventListener('keydown', function(e) {
 
-    if (e.key === 'Enter' || e.key === ',') {
-        e.preventDefault();
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault();
 
-        let value = tagInput.value.trim().replace(',', '');
-        if (value === '') return;
+                let value = tagInput.value.trim().replace(',', '');
+                if (value === '') return;
 
-        value = value.toLowerCase();
+                value = value.toLowerCase();
 
-        if (!tags.includes(value)) {
-            tags.push(value);
-            renderTags();
+                if (!tags.includes(value)) {
+                    tags.push(value);
+                    renderTags();
+                }
+
+                tagInput.value = '';
+            }
+        });
+
+        function renderTags() {
+            tagContainer.querySelectorAll('.tag').forEach(t => t.remove());
+
+            tags.forEach((tag, index) => {
+                const el = document.createElement('div');
+                el.className = 'tag';
+                el.innerHTML = `${tag} <span data-index="${index}">&times;</span>`;
+                tagContainer.insertBefore(el, tagInput);
+            });
+
+            hiddenTags.value = tags.join(',');
         }
 
-        tagInput.value = '';
-    }
-});
-
-function renderTags() {
-    tagContainer.querySelectorAll('.tag').forEach(t => t.remove());
-
-    tags.forEach((tag, index) => {
-        const el = document.createElement('div');
-        el.className = 'tag';
-        el.innerHTML = `${tag} <span data-index="${index}">&times;</span>`;
-        tagContainer.insertBefore(el, tagInput);
-    });
-
-    hiddenTags.value = tags.join(',');
-}
-
-tagContainer.addEventListener('click', function (e) {
-    if (e.target.tagName === 'SPAN') {
-        tags.splice(e.target.dataset.index, 1);
-        renderTags();
-    }
-});
+        tagContainer.addEventListener('click', function(e) {
+            if (e.target.tagName === 'SPAN') {
+                tags.splice(e.target.dataset.index, 1);
+                renderTags();
+            }
+        });
 
         /***********************************************************************************************/
 
@@ -456,7 +526,7 @@ tagContainer.addEventListener('click', function (e) {
             formData.append('published_at', published_at);
             formData.append('main_image', main_image);
 
-             formData.append('tags', $('#tags').val());
+            formData.append('tags', $('#tags').val());
             // Append additional images
             $('.image-card').each(function() {
                 var imageFile = $(this).find('.image-input')[0].files[0];
