@@ -187,7 +187,7 @@
                         </div>
                         <!-- Submit Button -->
                         <div class="col-12  mt-3">
-                            <button type="submit" class="btn btn-primary btn-lg px-5" id="add_news">Ajouter l'actualité</button>
+                            <button type="submit" class="btn btn-primary btn-lg px-5" id="edit_news">Modifier l'actualité</button>
                         </div>
                     </div>
                 </form>
@@ -202,11 +202,12 @@
 
 
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.6/Sortable.min.js" integrity="sha512-csIng5zcB+XpulRUa+ev1zKo7zRNGpEaVfNB9On1no9KYTEY/rLGAEEpvgdw6nim1WdTuihZY1eqZ31K7/fZjw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<!-- 2️⃣ Your JS -->
 <script>
-    $(document).ready(function() {
-
-
-        /************************************** get category **************************************/
+    /***************************************** add image html , remove , change position ****************************************** */
+    document.addEventListener('DOMContentLoaded', function() {
 
         function fetchCategories() {
             $.ajax({
@@ -214,7 +215,7 @@
                 method: 'POST',
                 success: function(response) {
                     var data = JSON.parse(response);
-                    var categoryOptions = '<option value="" disabled selected>Choisir une catégorie</option>';
+                    var categoryOptions = '<option value="" disabled >Choisir une catégorie</option>';
                     for (i = 0; i < data.length; i++) {
                         categoryOptions += '<option value="' + data[i].id_category + '">' + data[i].category_name + '</option>';
                     }
@@ -224,17 +225,6 @@
         }
         fetchCategories()
 
-
-
-    })
-</script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.6/Sortable.min.js" integrity="sha512-csIng5zcB+XpulRUa+ev1zKo7zRNGpEaVfNB9On1no9KYTEY/rLGAEEpvgdw6nim1WdTuihZY1eqZ31K7/fZjw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-<!-- 2️⃣ Your JS -->
-<script>
-    /***************************************** add image html , remove , change position ****************************************** */
-    document.addEventListener('DOMContentLoaded', function() {
 
         $('#main_image').on('change', function() {
             const file = this.files[0];
@@ -269,7 +259,7 @@
             </div>
             <img src="" class="img-preview img-fluid rounded mb-2" style="display:none; max-height:150px;">
             <button type="button" class="btn btn-danger btn-sm remove-image-btn">Supprimer</button>
-        `;
+         `;
 
             container.appendChild(card);
 
@@ -382,6 +372,8 @@
 
                     $('#title').val(data.title)
 
+                    console.log(data.category_id)
+
                     $('#categories').val(data.category_id)
 
                     //  $('#description').val(data.description)
@@ -390,8 +382,8 @@
                     $('#status').val(data.status)
                     $('#published_at').val(data.published_at)
 
-                    $('#mainImagePreview').attr('src','assets/uploads/news/'+data.main_image)
-                    $('#mainImagePreview').css('display','block')
+                    $('#mainImagePreview').attr('src', 'assets/uploads/news/' + data.main_image)
+                    $('#mainImagePreview').css('display', 'block')
 
 
 
@@ -425,20 +417,125 @@
                     /****************************get images *************************** */
 
                     $.ajax({
-                        url:'assets/php/actualites/get_news_images.php',
-                        method:'POST',
+                        url: 'assets/php/actualites/get_news_images.php',
+                        method: 'POST',
                         data: {
                             id: news_id
                         },
-                        success:function(response){
-                            console.log(response)
+                        success: function(response) {
+                            const dataImages = JSON.parse(response); // your backend data
+
+                            // Reset imageCount if needed
+                            imageCount = 0;
+
+                            dataImages.forEach(img => {
+                                imageCount++;
+                                const card = document.createElement('div');
+                                card.classList.add('image-card', 'card', 'p-2', 'shadow-sm');
+                                card.style.width = '180px';
+                                card.style.cursor = 'grab';
+                                card.setAttribute('data-position', img.position);
+
+                                card.innerHTML = `
+                                    <div class="mb-2">
+                                        <label class="form-label">Image ${imageCount}</label>
+                                        <input type="file" name="images[]" class="form-control image-input" accept="image/*">
+                                    </div>
+                                    <img src="assets/uploads/news/${img.image}" class="img-preview img-fluid rounded mb-2" style="display:block; max-height:150px;">
+                                    <button type="button" class="btn btn-danger btn-sm remove-image-btn">Supprimer</button>
+                                `;
+
+                                container.appendChild(card);
+
+                                // Preview for new upload
+                                const fileInput = card.querySelector('.image-input');
+                                const imgPreview = card.querySelector('.img-preview');
+                                fileInput.addEventListener('change', function(e) {
+                                    const file = e.target.files[0];
+                                    if (file) {
+                                        imgPreview.src = URL.createObjectURL(file);
+                                        imgPreview.style.display = 'block';
+                                    }
+                                });
+
+                                // Remove button
+                                card.querySelector('.remove-image-btn').addEventListener('click', function() {
+                                    card.remove();
+                                    updatePositions();
+                                });
+
+                                // Hidden input for position
+                                let hiddenInput = document.createElement('input');
+                                hiddenInput.type = 'hidden';
+                                hiddenInput.name = 'positions[]';
+                                hiddenInput.value = img.position;
+                                card.appendChild(hiddenInput);
+                            });
+
+                            // Update positions after loading backend images
+                            updatePositions();
                         }
-                    })
+                    });
+
                 }
             })
         }
         getDataNews()
 
+    });
+
+
+    /******************************* UPDATE NEWS **************************************** */
+
+    $('#edit_news').on('click', function(e) {
+        e.preventDefault();
+
+        let form = $('form')[0];
+        let formData = new FormData(form);
+        var title = $('#title').val();
+        var category = $('#categories').val();
+        var status = $('#status').val();
+        var published_at = $('#published_at').val();
+        formData.append('tags', $('#tags').val());
+        formData.append('id', $('#news_id').val());
+        const description = descriptionEditor.getData().trim();
+        var published_at = $('#published_at').val();
+        var main_image = $('#main_image')[0].files[0];
+        formData.append('title', title);
+        formData.append('category', category);
+        formData.append('description', description);
+        // formData.append('featured', featured);
+        formData.append('status', status);
+        formData.append('published_at', published_at);
+        formData.append('main_image', main_image);
+        // checkbox fix
+        formData.set('featured', $('#featured').is(':checked') ? 1 : 0);
+   $('.image-card').each(function() {
+                var imageFile = $(this).find('.image-input')[0].files[0];
+                var position = $(this).data('position');
+                formData.append('images[]', imageFile);
+                formData.append('positions[]', position);
+            });
+        $.ajax({
+            url: 'assets/php/actualites/update_news.php',
+            method: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(res) {
+                let data = JSON.parse(res);
+
+                if (data.success) {
+                    alert('Actualité mise à jour avec succès');
+                    window.location.reload();
+                } else {
+                    alert(data.error);
+                }
+            },
+            error: function() {
+                alert('Erreur serveur lors de la mise à jour');
+            }
+        });
     });
 </script>
 

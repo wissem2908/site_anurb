@@ -2,6 +2,7 @@
 include '../config.php';
 
 try {
+
     $bdd = new PDO(
         "mysql:host=" . DB_SERVER . ";dbname=" . DB_NAME . ";charset=utf8mb4",
         DB_USER,
@@ -10,22 +11,24 @@ try {
     );
 
     /* =========================
-       1. Basic validation
-       ========================= */
+       1. Validation
+    ========================= */
     if (
+        empty($_POST['id']) ||
         empty($_POST['title']) ||
         empty($_POST['description']) ||
         empty($_POST['category']) ||
         empty($_POST['status']) ||
-        empty($_POST['published_at']) ||
-        empty($_FILES['main_image']['name'])
+        empty($_POST['published_at'])
     ) {
         throw new Exception('Champs obligatoires manquants');
     }
 
+    $newsId = (int) $_POST['id'];
+
     /* =========================
-       2. Generate slug
-       ========================= */
+       2. Slug
+    ========================= */
     function slugify($text)
     {
         $text = strtolower(trim($text));
@@ -36,13 +39,26 @@ try {
     $slug = slugify($_POST['title']);
 
     /* =========================
-       3. Upload main image
-       ========================= */
-    $uploadDir = '../../uploads/news/';
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
+       3. Main image (optional)
+    ========================= */
+$uploadDir = '../../uploads/news/';
+$mainImageName = null;
+
+if (!empty($_FILES['main_image']['name'])) {
+
+    // 1️⃣ Get current main image from DB
+    $stmt = $bdd->prepare("SELECT main_image FROM news WHERE news_id = :id");
+    $stmt->execute(['id' => $newsId]);
+    $current = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($current && !empty($current['main_image'])) {
+        $oldImagePath = $uploadDir . $current['main_image'];
+        if (file_exists($oldImagePath)) {
+            unlink($oldImagePath); // delete old file
+        }
     }
 
+    // 2️⃣ Save new main image
     $mainImageName = time() . '_' . basename($_FILES['main_image']['name']);
     $mainImagePath = $uploadDir . $mainImageName;
 
@@ -50,40 +66,19 @@ try {
         throw new Exception('Erreur upload image principale');
     }
 
-    /* =========================
-       4. Insert news
-       ========================= */
-
-    // Example: author id from session (adjust if needed)
-    session_start();
-    $authorId = $_SESSION['user_id'] ?? 1;
-
+    // 3️⃣ Update DB with new main image
     $req = $bdd->prepare("
-        INSERT INTO news (
-            title,
-            slug,
-            description,
-            featured,
-            main_image,
-            author_id,
-            category_id,
-            published_at,
-            status,
-            views,
-            created_at
-        ) VALUES (
-            :title,
-            :slug,
-            :description,
-            :featured,
-            :main_image,
-            :author_id,
-            :category_id,
-            :published_at,
-            :status,
-            0,
-            NOW()
-        )
+        UPDATE news SET
+            title = :title,
+            slug = :slug,
+            description = :description,
+            featured = :featured,
+            main_image = :main_image,
+            category_id = :category_id,
+            published_at = :published_at,
+            status = :status,
+            updated_at = NOW()
+        WHERE news_id = :id
     ");
 
     $req->execute([
@@ -92,17 +87,44 @@ try {
         'description'  => $_POST['description'],
         'featured'     => (int) $_POST['featured'],
         'main_image'   => $mainImageName,
-        'author_id'    => $authorId,
         'category_id'  => $_POST['category'],
         'published_at' => $_POST['published_at'],
-        'status'       => $_POST['status']
+        'status'       => $_POST['status'],
+        'id'           => $newsId
     ]);
 
-    $newsId = $bdd->lastInsertId();
+} else {
+
+    // update without changing image
+    $req = $bdd->prepare("
+        UPDATE news SET
+            title = :title,
+            slug = :slug,
+            description = :description,
+            featured = :featured,
+            category_id = :category_id,
+            published_at = :published_at,
+            status = :status,
+            updated_at = NOW()
+        WHERE news_id = :id
+    ");
+
+    $req->execute([
+        'title'        => $_POST['title'],
+        'slug'         => $slug,
+        'description'  => $_POST['description'],
+        'featured'     => (int) $_POST['featured'],
+        'category_id'  => $_POST['category'],
+        'published_at' => $_POST['published_at'],
+        'status'       => $_POST['status'],
+        'id'           => $newsId
+    ]);
+}
 
     /* =========================
-       5. Insert additional images (optional)
-       ========================= */
+       4. Update gallery images
+    ========================= */
+
     if (!empty($_FILES['images']['name'][0])) {
 
         foreach ($_FILES['images']['tmp_name'] as $index => $tmpName) {
@@ -129,8 +151,32 @@ try {
         }
     }
 
+    /* =========================
+       5. Update positions only
+    ========================= */
+    // if (!empty($_POST['positions'])) {
+    //     foreach ($_POST['positions'] as $index => $pos) {
 
-    /********************** tags ***************************/
+    //         $bdd->prepare("
+    //             UPDATE news_images
+    //             SET position = :position
+    //             WHERE news_id = :news_id
+    //             LIMIT 1 OFFSET $index
+    //         ")->execute([
+    //             'position' => (int)$pos,
+    //             'news_id'  => $newsId
+    //         ]);
+    //     }
+    // }
+
+    /* =========================
+       6. Update tags
+    ========================= */
+
+    // delete existing links
+    $bdd->prepare("DELETE FROM news_tags WHERE news_id  = ?")->execute([$newsId]);
+
+     /********************** tags ***************************/
     if (!empty($_POST['tags'])) {
 
         $tags = explode(',', $_POST['tags']);
@@ -178,14 +224,14 @@ try {
             ]);
         }
     }
-
-
     echo json_encode([
         'success' => true,
         'news_id' => $newsId
     ]);
 } catch (Exception $e) {
+
     http_response_code(500);
+
     echo json_encode([
         'success' => false,
         'error'   => $e->getMessage()
