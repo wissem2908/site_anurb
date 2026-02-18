@@ -10,13 +10,13 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="news_table" width="100%" cellspacing="0">
+                <table class="table table-bordered" id="missions_table" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>Image</th>
                             <th>Titre</th>
                     
-                           
+                           <th>Description</th>
                             <th>Status</th>
                             <th>Date de creation</th>
                             <th>Action</th>
@@ -26,13 +26,13 @@
                         <tr>
                             <th>Image</th>
                             <th>Titre</th>
-                           
+                           <th>Description</th>
                             <th>Status</th>
                             <th>Date de creation</th>
                             <th>Action</th>
                         </tr>
                     </tfoot>
-                    <tbody>
+                    <tbody id="missions_tbody">
 
 
                     </tbody>
@@ -44,3 +44,26 @@
                 <!-- /.container-fluid -->
 
     <?php include "includes/footer.php"; ?>        
+
+
+    <script>
+
+
+        function get_missions(){
+            $.ajax({
+                url:'assets/php/missions/get_missions.php',
+                method:'POST',
+                success:function(response){
+                    console.log(response)
+                    var data = JSON.parse(response)
+
+                    var missions = "";
+                    for(var i=0; i <data.length; i++){
+                        missions+=`<tr><td> </td><td>${data[i].titre}</td><td>${data[i].description}</td><td>${data[i].status}</td><td>${data[i].created_at}</td><td></td></tr>`
+                    }
+                    $('#missions_tbody').append(missions)
+                }
+            })
+        }
+         get_missions()
+    </script>
