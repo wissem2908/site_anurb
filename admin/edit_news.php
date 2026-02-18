@@ -278,6 +278,12 @@
             card.querySelector('.remove-image-btn').addEventListener('click', function() {
                 card.remove();
                 updatePositions();
+
+
+                const imageId = card.dataset.id;
+
+                console.log(imageId)
+                /*************************** remove old images ************************ */
             });
 
             updatePositions();
@@ -307,6 +313,7 @@
                 hiddenInput.value = index + 1;
             });
         }
+
 
 
         /******************************************************************************************** */
@@ -442,7 +449,7 @@
                                         <input type="file" name="images[]" class="form-control image-input" accept="image/*">
                                     </div>
                                     <img src="assets/uploads/news/${img.image}" class="img-preview img-fluid rounded mb-2" style="display:block; max-height:150px;">
-                                    <button type="button" class="btn btn-danger btn-sm remove-image-btn">Supprimer</button>
+                                    <button type="button" class="btn btn-danger btn-sm remove-image-btn" data-id=${img.id}>Supprimer</button>
                                 `;
 
                                 container.appendChild(card);
@@ -460,8 +467,40 @@
 
                                 // Remove button
                                 card.querySelector('.remove-image-btn').addEventListener('click', function() {
-                                    card.remove();
-                                    updatePositions();
+                                    // card.remove();
+                                    // updatePositions();
+                                    var imageId = $(this).data('id')
+
+                                    // console.log(id)
+
+                                    if (!imageId) {
+                                        card.remove();
+                                        updatePositions();
+                                        return;
+                                    }
+
+                                    /*********************************************************** */
+
+                                    // Image exists in DB → delete via AJAX
+                                    fetch('assets/php/actualites/delete_image.php', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/x-www-form-urlencoded'
+                                            },
+                                            body: 'id=' + encodeURIComponent(imageId)
+                                        })
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            console.log(data.success)
+                                            if (data.success) {
+                                                card.remove();
+                                                updatePositions();
+                                            } else {
+                                                alert('Image not found in database');
+                                            }
+                                        });
+
+                                    /*********************************************************** */
                                 });
 
                                 // Hidden input for position
@@ -510,12 +549,12 @@
         formData.append('main_image', main_image);
         // checkbox fix
         formData.set('featured', $('#featured').is(':checked') ? 1 : 0);
-   $('.image-card').each(function() {
-                var imageFile = $(this).find('.image-input')[0].files[0];
-                var position = $(this).data('position');
-                formData.append('images[]', imageFile);
-                formData.append('positions[]', position);
-            });
+        $('.image-card').each(function() {
+            var imageFile = $(this).find('.image-input')[0].files[0];
+            var position = $(this).data('position');
+            formData.append('images[]', imageFile);
+            formData.append('positions[]', position);
+        });
         $.ajax({
             url: 'assets/php/actualites/update_news.php',
             method: 'POST',
